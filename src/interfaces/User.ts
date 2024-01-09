@@ -1,8 +1,9 @@
-import { Date, Time, WeekDay } from "./DateTime";
+import { Schedule } from "@/interfaces/Schedule";
 
 export interface User {
-  id: string /** Auto Generated */;
-  meetId: string;
-  password: string;
-  availableTimes: Record<Date | WeekDay, Time[]>;
+  id: string;
+
+  name: string /** 유저 이름 */;
+  password: string /** 유저 비밀번호 */;
+  availableSchedules: Schedule[] /** 모임 가능 일정 */;
 }

@@ -1,17 +1,14 @@
-import { Date, Time, WeekDay } from "./DateTime";
-import { User } from "./User";
+import { User } from "@/interfaces/User";
+import { Schedule } from "@/interfaces/Schedule";
 
-export type Meet = (OneOffMeet | WeeklyMeet) & {
+export interface Meet {
   id: string;
-  attendee: User[];
-};
 
-export interface OneOffMeet {
-  type: "one-off";
-  candidateTimes: Record<Date, Time[]>;
-}
+  name?: string /** 모임 이름 */;
+  type: "one-off" | "weekly" /** 모임 형태 */;
+  online: boolean /** 온라인 가능 여부 */;
+  offline: boolean /** 오프라인 가능 여부 */;
+  candidateSchedules: Schedule[] /** 선택 가능한 일정 */;
 
-export interface WeeklyMeet {
-  type: "weekly";
-  candidateTimes: Record<WeekDay, Time[]>;
+  attendee: User[] /** 참여자 */;
 }
