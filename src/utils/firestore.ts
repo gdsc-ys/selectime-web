@@ -4,9 +4,13 @@ import {
   WithFieldValue,
   addDoc,
   collection,
+  getDocs,
   getFirestore,
 } from "firebase/firestore";
 
+/**
+ * Intialization
+ */
 const app = initializeApp({
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -18,13 +22,21 @@ const app = initializeApp({
 const db = getFirestore(app);
 
 /**
- * 추가
+ * Utils
  */
 export const addDocument = async <T extends WithFieldValue<DocumentData>>(
   collectionName: string,
   data: T
 ) => {
-  const docRef = await addDoc(collection(db, collectionName), data);
+  const ref = await addDoc(collection(db, collectionName), data);
 
-  return docRef.id;
+  return ref.id;
+};
+
+export const getDocument = async <T extends DocumentData>(
+  collectionName: string
+) => {
+  const snapshot = await getDocs(collection(db, collectionName));
+
+  return snapshot.docs.map((doc) => doc.data() as T);
 };
