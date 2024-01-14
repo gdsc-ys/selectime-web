@@ -1,11 +1,15 @@
 import { initializeApp } from "firebase/app";
 import {
   DocumentData,
-  WithFieldValue,
+  UpdateData,
   addDoc,
   collection,
+  doc,
+  getDoc,
   getDocs,
   getFirestore,
+  onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
 
 /**
@@ -24,19 +28,60 @@ const db = getFirestore(app);
 /**
  * Utils
  */
-export const addDocument = async <T extends WithFieldValue<DocumentData>>(
+export const getDocuments = async <T extends DocumentData>(
+  collectionName: string
+) => {
+  const collectionRef = collection(db, collectionName);
+  const snapshot = await getDocs(collectionRef);
+
+  return snapshot.docs.map((doc) => doc.data() as T);
+};
+
+export const getDocument = async <T extends DocumentData>(
+  collectionName: string,
+  documentName: string
+) => {
+  const documentRef = doc(db, collectionName, documentName);
+  const snapshot = await getDoc(documentRef);
+
+  if (!snapshot.exists()) {
+    throw new Error("No such document!");
+  }
+
+  return snapshot.data() as T;
+};
+
+export const watchDocument = async <T extends DocumentData>(
+  collectionName: string,
+  documentName: string,
+  callback: (data: T) => void
+) => {
+  const documentRef = doc(db, collectionName, documentName);
+
+  return onSnapshot(documentRef, (snapshot) => {
+    if (!snapshot.exists()) {
+      throw new Error("No such document!");
+    }
+
+    callback(snapshot.data() as T);
+  });
+};
+
+export const addDocument = async <T extends DocumentData>(
   collectionName: string,
   data: T
 ) => {
-  const ref = await addDoc(collection(db, collectionName), data);
+  const collectionRef = collection(db, collectionName);
+  const ref = await addDoc(collectionRef, data);
 
   return ref.id;
 };
 
-export const getDocument = async <T extends DocumentData>(
-  collectionName: string
+export const updateDocument = async <T extends DocumentData>(
+  collectionName: string,
+  documentName: string,
+  data: UpdateData<T>
 ) => {
-  const snapshot = await getDocs(collection(db, collectionName));
-
-  return snapshot.docs.map((doc) => doc.data() as T);
+  const documentRef = doc(db, collectionName, documentName);
+  await updateDoc(documentRef, data);
 };
