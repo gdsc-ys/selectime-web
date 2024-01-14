@@ -15,6 +15,7 @@ import {
 /**
  * Intialization
  */
+
 const app = initializeApp({
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -28,60 +29,65 @@ const db = getFirestore(app);
 /**
  * Utils
  */
-export const getDocuments = async <T extends DocumentData>(
-  collectionName: string
-) => {
-  const collectionRef = collection(db, collectionName);
-  const snapshot = await getDocs(collectionRef);
 
-  return snapshot.docs.map((doc) => doc.data() as T);
+type Document = { id: string } & DocumentData;
+
+export const getDocuments = async <T extends Document>(
+  collectionId: string
+) => {
+  const collectionRef = collection(db, collectionId);
+  const collectionSnapshot = await getDocs(collectionRef);
+
+  return collectionSnapshot.docs.map(
+    (document) => ({ id: document.id, ...document.data() } as T)
+  );
 };
 
-export const getDocument = async <T extends DocumentData>(
-  collectionName: string,
-  documentName: string
+export const getDocument = async <T extends Document>(
+  collectionId: string,
+  documentId: string
 ) => {
-  const documentRef = doc(db, collectionName, documentName);
-  const snapshot = await getDoc(documentRef);
+  const documentRef = doc(db, collectionId, documentId);
+  const document = await getDoc(documentRef);
 
-  if (!snapshot.exists()) {
+  if (!document.exists()) {
     throw new Error("No such document!");
   }
 
-  return snapshot.data() as T;
+  return { id: document.id, ...document.data() } as T;
 };
 
-export const watchDocument = async <T extends DocumentData>(
-  collectionName: string,
-  documentName: string,
+export const watchDocument = async <T extends Document>(
+  collectionId: string,
+  documentId: string,
   callback: (data: T) => void
 ) => {
-  const documentRef = doc(db, collectionName, documentName);
+  const documentRef = doc(db, collectionId, documentId);
 
-  return onSnapshot(documentRef, (snapshot) => {
-    if (!snapshot.exists()) {
+  return onSnapshot(documentRef, (document) => {
+    if (!document.exists()) {
       throw new Error("No such document!");
     }
 
-    callback(snapshot.data() as T);
+    callback({ id: document.id, ...document.data() } as T);
   });
 };
 
 export const addDocument = async <T extends DocumentData>(
-  collectionName: string,
+  collectionId: string,
   data: T
 ) => {
-  const collectionRef = collection(db, collectionName);
-  const ref = await addDoc(collectionRef, data);
+  const collectionRef = collection(db, collectionId);
+  const documentRef = await addDoc(collectionRef, data);
 
-  return ref.id;
+  return documentRef.id;
 };
 
 export const updateDocument = async <T extends DocumentData>(
-  collectionName: string,
-  documentName: string,
+  collectionId: string,
+  documentId: string,
   data: UpdateData<T>
 ) => {
-  const documentRef = doc(db, collectionName, documentName);
+  const documentRef = doc(db, collectionId, documentId);
   await updateDoc(documentRef, data);
 };
