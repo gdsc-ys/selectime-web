@@ -10,5 +10,9 @@ export interface Meet {
   offline: boolean /** 오프라인 가능 여부 */;
   candidateSchedules: Schedule[] /** 선택 가능한 일정 */;
 
-  attendee: User[] /** 참여자 */;
+  attendees: User[] /** 참여자 */;
 }
+
+export type FlatMeet = Omit<Meet, "attendees"> & {
+  attendeeIds: User["id"][];
+};
