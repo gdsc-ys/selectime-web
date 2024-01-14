@@ -1,10 +1,20 @@
 import "./App.css";
 import reactLogo from "./assets/react.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import viteLogo from "/vite.svg";
+import { getMeet } from "@/apis/meet";
 
 function App() {
   const [count, setCount] = useState(0);
+
+  const handleTest = async () => {
+    const meet = await getMeet("BAaVQj91wAqJRnBLjdxp");
+    console.log(meet);
+  };
+
+  useEffect(() => {
+    handleTest();
+  }, []);
 
   return (
     <>
