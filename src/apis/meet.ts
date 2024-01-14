@@ -3,21 +3,18 @@ import { addDocument, getDocument, updateDocument } from "@/utils/firestore";
 import { getUser } from "@/apis/user";
 
 export const getMeet = async (meetId: Meet["id"]): Promise<Meet> => {
-  const meet = await getDocument<FlatMeet>("meet", meetId);
+  const { attendeeIds, ...meet } = await getDocument<FlatMeet>("meet", meetId);
 
   return {
     ...meet,
-    attendees: await Promise.all(meet.attendeeIds.map((id) => getUser(id))),
+    attendees: await Promise.all(attendeeIds.map((id) => getUser(id))),
   };
 };
 
 export const createMeet = async (
-  meet: Omit<Meet, "id" | "attendees">
+  meet: Omit<FlatMeet, "id">
 ): Promise<Meet["id"]> => {
-  return addDocument<Omit<FlatMeet, "id">>("meet", {
-    ...meet,
-    attendeeIds: [],
-  });
+  return addDocument("meet", meet);
 };
 
 export const patchMeet = async (
