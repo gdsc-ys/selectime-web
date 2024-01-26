@@ -10,6 +10,11 @@ module.exports = {
     "plugin:import/warnings",
     "prettier",
   ],
+  settings: {
+    "import/resolver": {
+      typescript: {},
+    },
+  },
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parser: "@typescript-eslint/parser",
   plugins: ["react-refresh"],
@@ -21,6 +26,5 @@ module.exports = {
     "react/react-in-jsx-scope": "off",
     "react/jsx-no-target-blank": "warn",
     "@typescript-eslint/no-unused-vars": "warn",
-    "import/no-unresolved": "warn",
   },
 };
