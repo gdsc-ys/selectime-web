@@ -2,14 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Root from "./routes/Root/Root.tsx";
+import CreateMeet from "./routes/CreateMeet/CreateMeet.tsx";
 import ErrorPage from "./error-page";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: <CreateMeet />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: "meet/:meetId",
+    element: <Meet />,
   },
 ]);
 
