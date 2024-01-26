@@ -9,10 +9,6 @@ export class TimeSlice {
   features: boolean[];
   users: Set<User>;
 
-  n_feautre: number;
-  lifeCount: number;
-  safeCount: number;
-
   constructor(
     beginTime: number,
     endTime: number,
@@ -23,26 +19,18 @@ export class TimeSlice {
     this.endTime = endTime;
     this.features = features;
     this.users = users;
-
-    this.n_feautre = features.map(x => x ? 1 as number : 0 as number).reduce((x, y) => x + y)
-    this.lifeCount = this.n_feautre;
-    this.safeCount = 0;
   }
 
-  resetCount(): void {
-    this.lifeCount = this.n_feautre;
-    this.safeCount = 0;
+  update(): void {
+    this.endTime += TimeSlice.UNIT_TIME;
   }
 
-  branch(forWhat: number, noMores: Set<User>): TimeSlice {
-    const new_endTime = this.endTime + TimeSlice.UNIT_TIME;
-    let new_features = [...this.features]; new_features[forWhat] = false;
-    const new_users = new Set([...this.users].filter(x => !noMores.has(x)));
+  branch(noMores: Set<User>): TimeSlice {
     return new TimeSlice(
       this.beginTime,
-      new_endTime,
-      new_features,
-      new_users
+      this.endTime + TimeSlice.UNIT_TIME,
+      this.features,
+      new Set([...this.users].filter(x => !noMores.has(x)))
     );
   }
 }
